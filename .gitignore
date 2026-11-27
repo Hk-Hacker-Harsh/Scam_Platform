@@ -1,0 +1,31 @@
+# Runtime data (database, secret key, generated police password)
+instance/
+*.db
+*.sqlite3
+
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+env/
+
+# Secrets and local config
+.env
+.env.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Frontend (rebuild with npm)
+frontend/node_modules/
+frontend/dist/
+frontend/dist-proto/
+
+# Local caches and submission material kept outside the repo
+*.log
+.cache/

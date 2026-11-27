@@ -7,6 +7,28 @@ the exact reasons (106 rule-based checks), pulls out phone numbers, UPI IDs and 
 and gives officers a dashboard to confirm fraud. Channels: a Vue website, a Chrome extension with a snip tool and a
 Telegram bot. A local AI assistant (Ollama) explains results in English and Hindi; the rules always decide.
 
+## Screenshots
+All screenshots use the built-in synthetic sample data (no real case data).
+
+| Citizen check | High-risk result |
+|---|---|
+| ![Home](screenshots/01-home.png) | ![High-risk result](screenshots/02-result-high.png) |
+| **Android app (.apk) result** | **AI assistant (English / Hindi)** |
+| ![APK result](screenshots/04-result-apk.png) | ![Assistant](screenshots/06-assistant.png) |
+| **Officer overview** | **Officer case view** |
+| ![Officer overview](screenshots/08-officer-overview.png) | ![Officer case](screenshots/10-officer-case.png) |
+| **Link graph** | **Campaigns** |
+| ![Link graph](screenshots/11-officer-graph.png) | ![Campaigns](screenshots/12-officer-campaigns.png) |
+
+More in [`screenshots/`](screenshots/).
+
+## Features not built
+[`New_to_add.txt`](New_to_add.txt) lists features that were planned for the next stage but were not built, because the
+project was not selected for the hackathon's offline round:
+* Automatic loan / phishing site finder and detector
+* Scam call recording analyzer
+* Matching against known scam templates
+
 **Full documentation: [`manual/`](manual/00_READ_ME_FIRST.txt)** (files, settings, where to change what, API, scoring,
 assistant, testing, security, troubleshooting, demo).
 
