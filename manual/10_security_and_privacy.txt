@@ -1,0 +1,29 @@
+10 – SECURITY AND PRIVACY
+
+SERVER
+  * Website API: session cookie (HttpOnly, SameSite=Lax) + CSRF token on every change.
+  * Officer pages need sign-in; sign-in is rate-limited (10 / minute / address); every officer action, sign-in and
+    assistant question is written to the audit log.
+  * Extension / bot API: API key; CORS only for browser-extension origins; rate limits.
+  * Security headers on every response: no MIME sniffing, no framing, no referrer, Content-Security-Policy that only
+    allows our own scripts.
+  * Page and APK downloads are SSRF-safe: only http / https, only public addresses (checked on every redirect),
+    allowed ports only, size limits.
+  * CSV export escapes cells so spreadsheets never run them as formulas.
+  * APKs are parsed, never installed or run, and deleted after analysis. Images are read in memory and not stored.
+
+CITIZENS
+  * Extension: nothing runs until the user clicks. "Check this page" sends the address without query strings.
+    The snip sends only the selected box; the screenshot is taken at the click, kept in session memory, and deleted
+    after use or on cancel. Permissions: activeTab, contextMenus, storage, scripting (no access to all sites).
+  * Assistant: only the question and case number are sent; the AI runs locally; raw scam text is never sent to it.
+  * Citizen reports never block anything; contact details are optional.
+
+DATA
+  * Only R4C sample data or synthetic data. No real personal data.
+  * The prototype and all screenshots use synthetic data recorded from the engine.
+  * instance/ holds the database, passwords, API key, Telegram token and session key: never share, upload or submit it.
+
+OUT OF SCOPE FOR PS01 (and not done)
+  Running apps in a sandbox, automatic takedown, accessing private accounts or non-public data, sending test
+  payloads to other people's sites (we only detect payloads inside links).

@@ -1,0 +1,37 @@
+08 – AI ASSISTANT
+
+WHERE
+  Website (button "Ask Satark"; on a result it answers about that result), officer dashboard ("Ask the case
+  assistant"), Chrome extension (popup and under every result). Same engine: core/assistant.py.
+
+HOW IT WORKS
+  1. Python reads the question and picks a tool:
+       small talk (hello, thanks, who are you)            -> friendly reply, never case data
+       a pasted message / link / number / UPI ID          -> runs a real analysis or an identifier lookup
+       a question about the open result                   -> explains that case (why, is it safe, what to do, report)
+       a general cyber-safety question                    -> the safety guide (core/assistant_kb.py), else the model
+       officer questions (summary of today, case 13, cases linked to 13, top identifiers, campaigns, open reports,
+       latest high-risk, a pasted identifier)             -> exact figures from the database
+  2. Python writes a correct "checked answer" from that data.
+  3. The local model (Ollama, qwen3:1.7b) rewrites it in plain language.
+  4. The reply is checked. It is rejected if it: tells anyone to share an OTP / PIN or install screen-sharing apps,
+     calls a risky item safe (or a low-risk one a scam), opens with "Yes" when the checked answer does not, invents
+     numbers, links or phone numbers, is a list, repeats itself, echoes the prompt or talks about the task.
+  5. Rejected, slow (45 s) or Ollama off -> the checked answer is shown, labelled "Checked answer".
+  The verdict always comes from the rule checks. Raw scam text and page content are never sent to the model.
+  Hindi answers come from written templates (small models cannot write Hindi reliably).
+  Officer answers never use the model by default (PS01_LLM_POLICE=0).
+
+MODELS TESTED ON THE DEVELOPMENT LAPTOP (20 November, same 9 questions)
+  tinyllama     0 / 9 replies passed (lists, "Sure! Here's…", typos; once told a user how to share an OTP)
+  qwen3.5:4b    8 / 8 passed, 16–50 s per answer, ~75 s for the first answer while loading
+  qwen3:1.7b    5 / 9 passed at ~5 s (others rejected for "Yes, but…" or echoing the guide) – the default
+  With the model allowed for officers, qwen3:1.7b wrote "5 cases today, of these 28 are high risk" (real numbers,
+  wrong relation). That is why officer answers stay database-only.
+
+SPEECH (frontend/src/speech.js)
+  Listen / auto-speak: the computer's own voices (offline). This laptop has English (India) and Hindi (India).
+  Voice input (mic): the browser's speech service, needs internet in Chrome / Edge.
+
+CHANGING IT
+  Model: PS01_LLM_MODEL. Rules for bad replies: guard() in core/assistant.py. Guide answers: core/assistant_kb.py.

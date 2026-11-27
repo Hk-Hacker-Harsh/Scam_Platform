@@ -1,0 +1,8 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>Satark settings</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="top"><span class="mark">S</span><h1>Satark settings</h1></div>
+<label for="server">Server address</label><input id="server" placeholder="http://127.0.0.1:5000">
+<label for="key">API key (from instance/api_key.txt on the server)</label><input id="key" type="password" autocomplete="off">
+<button id="save">Save and test</button><p id="status" class="hint"></p>
+<p class="hint">For a server other than 127.0.0.1 / localhost, use HTTPS. The server accepts calls from browser extensions only with this key.</p>
+<script src="common.js"></script><script src="options.js"></script></body></html>

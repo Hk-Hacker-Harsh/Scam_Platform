@@ -1,0 +1,53 @@
+05 – WHERE TO UPDATE WHAT
+
+After a change: run the tests (python -m pytest tests -q). After a website change: cd frontend && npm run build.
+After an extension change: reload it in chrome://extensions. After a server change: restart python app.py.
+
+DETECTION
+  Add a new check                python manage.py newcheck <folder> <check_id>   then edit the new file in
+                                 core/checks/<folder>/. Nothing else to register. Add a test in tests/.
+  Change a check's weight / tier Edit the @check(...) line in its file: "H" strong, "S" weak, "L" info; the number is
+                                 the weight. Weights >= 45 on a strong check make it "decisive" (High on its own).
+  Change scam keywords           core/data.py -> KW (English / Hinglish) and KW_HI (Hindi). Each entry is a list of
+                                 regular expressions.
+  Add a bank / brand             core/data.py -> BRANDS: official domains, helpline numbers, app package names.
+  Official domains (RBI)         core/data/rbi_bank_domains.json, verified_nbfc_domains.json, rbi_entities.csv
+  UPI handles, risky TLDs,       core/data.py -> UPI_HANDLES, RISKY_TLDS, SHORTENERS, FREE_HOSTS, DYNDNS_TUNNEL
+  shorteners, free hosts
+  High / Medium / Low rule       core/engine.py -> HIGH_AT, MEDIUM_AT, DECISIVE_W, CORROBORATION and verdict()
+  APK reading (permissions,      core/checks/apk/extractor.py (and DANGEROUS_PERMS in core/data.py)
+  packers, noise filters)
+  Check catalogue page           core/data/catalogue.json
+  After changing check logic without changing weights: bump RULES_REVISION in core/analysis.py so cached results
+  are re-checked.
+
+TEXTS PEOPLE READ
+  "What to do now" advice        core/advice.py (English + Hindi)
+  Assistant safety guide         core/assistant_kb.py (FAQ entries: keywords, en, hi; greeting texts)
+  Assistant small talk           core/assistant.py -> SMALLTALK_REPLY
+  PDF report                     core/report.py
+  Website pages                  frontend/src/views/*.vue (page text is in the template at the top of each file)
+  Website header / footer        frontend/src/App.vue
+  Extension texts                extension/popup.html, common.js
+  Telegram bot texts             bots/telegram_bot.py -> HELP, format_result()
+
+LOOK AND FEEL
+  Colours, fonts, light / dark   frontend/src/styles.css (:root tokens; dark values below them)
+  Extension colours              extension/style.css
+  Extension icons                extension/icons/ (16, 32, 48, 128 px PNG)
+
+AI ASSISTANT
+  Model and timeouts             environment variables (03_configuration.txt)
+  What counts as a bad reply     core/assistant.py -> guard() and the patterns above it
+  Officer questions it handles   core/assistant.py -> answer_police()
+
+LIMITS
+  Upload size                    app.py MAX_CONTENT_LENGTH; APK limit in core/analysis.py; image limit in
+                                 core/image_input.py
+  Rate limits                    ui_api.py limited(...) calls; PS01_API_RATE; PS01_BOT_RATE
+
+MAINTENANCE
+  Re-apply identifier rules and scores to old cases:  python manage.py cleanids   (dry run)
+                                                      python manage.py cleanids --apply   (back up instance/ps01.db first)
+  Fresh demo data:  python seed_demo.py
+  Prototype after UI or engine changes:  python tools/make_prototype.py, then python tools/screenshots.py

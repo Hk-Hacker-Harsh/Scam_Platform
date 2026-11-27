@@ -1,0 +1,3 @@
+Automatic Loan/phishing site finder and detector
+Scam call rec analyzer
+Matching scam templates

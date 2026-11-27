@@ -1,0 +1,44 @@
+01 – OVERVIEW
+
+WHAT SATARK DOES
+  Input  : SMS / WhatsApp / e-mail text, a link or domain, a screenshot or photo (QR codes and text), an Android APK
+           (file or download link), an e-mail (.eml or pasted headers), a phone number or UPI ID.
+  Checks : 106 rule-based checks in 9 groups (URL 23, APK 19, Message 19, Website 16, Email 9, Payment 8,
+           Intelligence 5, Phone 4, Domain 3). 38 are strong ("hard") signals.
+  Output : a risk level (Confirmed fraud / High / Medium / Low / Verified official / Not enough data), the checks that
+           fired with the exact evidence, a detection meter ("12 of 57 checks flagged"), identifiers found, advice in
+           English and Hindi, the 1930 helpline, a PDF report.
+  Police : officers mark identifiers "confirmed fraud" or "verified official" (this overrides the rules everywhere),
+           see linked cases, campaigns, a link graph, a heat-list, citizen reports, an audit log, CSV export.
+
+CHANNELS (all use the same engine and database)
+  Website (Vue)        frontend/          citizen checker, results, AI assistant, officer dashboard
+  Chrome extension     extension/         check this page, right-click a link, snip part of the screen, assistant
+  Telegram bot         bots/              forward anything, buttons for "report to police" and the PDF
+  JSON API             api.py, ui_api.py  for the above, and for future clients (WhatsApp)
+
+MAIN DESIGN RULES
+  * Rules decide the verdict, never the AI. Every verdict lists the checks that fired.
+  * We never say "safe": the lowest result is "Low risk", which means no strong warning sign was found.
+  * Police labels override the rules. Citizen reports only raise priority, they never block anything.
+  * APKs are read, never installed or run, and are deleted straight after analysis.
+  * Works offline: online lookups (domain age, DNS, page fetch) are optional and cached; the AI is local (Ollama).
+  * Only synthetic or R4C sample data. No real personal data.
+
+WHAT IS BUILT (20 November)
+  Working: all inputs above, 106 checks, OCR (English) + QR decoding, deep scan, website with light / dark theme,
+  officer dashboard, link graph, campaigns, heat-list, registry, audit log, PDF / CSV, result cache, lookup cache and
+  offline mode, Chrome extension with snip tool, Telegram bot, AI assistant (qwen3:1.7b via Ollama) with checked
+  replies, read-aloud and voice input, offline single-file prototype, 135 automated tests.
+  Not built / later: WhatsApp bot, Hindi OCR (needs the Tesseract Hindi data file), tuning weights on the R4C sample
+  data, precision / recall figures, evidence pack with legal wording, district heat map, website clone similarity.
+
+HOW A CHECK RUNS (one request)
+  1. Input arrives (website, extension or bot) -> core/analysis.py analyze()
+  2. Result cache: same input in the last 12 hours and nothing changed -> the earlier case is returned instantly
+  3. Identifiers are extracted (core/extract.py); screenshots go through OCR + QR first (core/image_input.py);
+     APKs are parsed (core/checks/apk/extractor.py)
+  4. Every check in core/checks/ runs (core/engine.py run_checks); online ones only when online lookups are on
+  5. Police labels and the official registry are applied; the verdict is decided (engine.verdict)
+  6. The case, findings and identifiers are saved (core/db.py); deep scan may follow links and APKs as child cases
+  7. The reply goes back to the channel; the officer dashboard sees the case at once

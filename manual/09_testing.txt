@@ -1,0 +1,31 @@
+09 – TESTING
+
+RUN
+  python -m pytest tests -q              all tests (135, about a minute)
+  python -m pytest tests/test_cache.py   one file
+  python -m pytest tests -k assistant    by name
+  Tests never call the real AI model (PS01_LLM=0 in tests/conftest.py) and never use the internet: online parts use a
+  local test web server or stand-ins.
+
+WHAT EACH FILE COVERS
+  test_app.py             detection on sample messages, URLs, e-mails, APKs; police override and linking; SSRF
+                          protection; website API end to end (citizen -> officer -> confirmed fraud); CSRF; deep scan;
+                          one file per check
+  test_apk_extractor.py   real DEX string table, manifest rights, asset scanning of hybrid apps, junk filtering
+  test_balance.py         UPI precision, the High rule, the portfolio false-alarm case, linking guards
+  test_cache.py           result cache (repeats, label / rule changes, expiry, APK), lookup cache, offline mode
+  test_assistant.py       reply checker, case / general / officer answers, small talk, endpoints (model stubbed)
+  test_new_features.py    extension / bot API, screenshots and QR, Hindi patterns
+  test_telegram_bot.py    the bot against the real server, Telegram stubbed
+  test_ui_api.py          website API: session, CSRF, login limit, officer actions, serving the built website
+
+WRITING A TEST FOR A NEW CHECK
+  def test_my_check(app):
+      cid = analyze(app.db, "message", text="… a sample that should fire …")
+      fired = {f["check_id"] for f in app.db.get_case(cid)["findings"] if f["status"] == "fired"}
+      assert "my_check" in fired
+  Use only synthetic data.
+
+ACCURACY
+  Weights are hand-set and not yet tuned on labelled data. Do not quote accuracy until the R4C samples have been
+  run and precision / recall measured, and then always give the sample size.

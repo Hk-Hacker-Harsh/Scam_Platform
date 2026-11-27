@@ -1,0 +1,14 @@
+/* Wireframe view for the prototype: same layout, no colour or styling, grey outlines. Toggled by ProtoBar or ?wire=1. */
+html.wire { --paper: #ffffff; --surface: #ffffff; --sunk: #f4f4f4; --ink: #333333; --ink-2: #555555; --muted: #888888;
+  --rule: #b5b5b5; --rule-strong: #8f8f8f; --brass: #555555; --brass-soft: #eeeeee;
+  --high: #444444; --high-bg: #e6e6e6; --conf: #222222; --conf-bg: #dddddd; --med: #555555; --med-bg: #eeeeee;
+  --low: #666666; --low-bg: #f0f0f0; --ok: #666666; --ok-bg: #f0f0f0; --nd: #777777; --nd-bg: #f2f2f2; color-scheme: light; }
+html.wire *, html.wire *::before, html.wire *::after { box-shadow: none !important; text-shadow: none !important;
+  font-family: "Segoe UI", Arial, sans-serif !important; letter-spacing: normal !important; }
+html.wire .panel, html.wire .verdict, html.wire .drawer, html.wire .card, html.wire .alert, html.wire .bubble,
+html.wire .chip, html.wire .lv, html.wire input, html.wire textarea, html.wire select { border: 1.5px dashed #9a9a9a !important; }
+html.wire .btn { background: #ffffff !important; color: #333333 !important; border: 1.5px solid #555555 !important; }
+html.wire .launcher { background: #ffffff !important; color: #333 !important; border: 1.5px solid #555 !important; }
+html.wire svg, html.wire canvas, html.wire img { filter: grayscale(1) contrast(.9); }
+html.wire .lv::before, html.wire .dot { background: #888888 !important; }
+html.wire .mark { background: #dddddd !important; color: #333333 !important; }

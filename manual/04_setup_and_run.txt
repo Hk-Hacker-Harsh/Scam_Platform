@@ -1,0 +1,49 @@
+04 – SETUP AND RUNNING
+
+A. FIRST-TIME SETUP ON A NEW LAPTOP
+  1. Python 3.12+ and Node.js 20+.
+  2. pip install -r requirements.txt
+  3. cd frontend  ->  npm install  ->  npm run build  ->  cd ..
+  4. OCR (optional, for text in screenshots):
+       pip install pytesseract
+       winget install --id UB-Mannheim.TesseractOCR --interactive
+         (tick "Additional language data -> Hindi" if Hindi text should be read)
+  5. AI assistant (optional): install Ollama, then  ollama pull qwen3:1.7b
+  6. python app.py  -> open http://127.0.0.1:5000
+
+B. EVERY DAY
+  python app.py                                    the server (keep this terminal open)
+  python -m pytest tests -q                        tests (about a minute)
+  cd frontend && npm run build                     after any change in frontend/src
+  cd frontend && npm run dev                       hot reload while designing (http://localhost:5173, needs app.py running)
+
+C. OFFICER ACCOUNTS
+  First account: user "police", password in instance/initial_police_password.txt
+  More:  python manage.py adduser <name> officer   (asks for the password)
+
+D. CHROME EXTENSION
+  1. chrome://extensions -> turn on Developer mode -> Load unpacked -> choose the "extension" folder
+  2. The settings page opens: server http://127.0.0.1:5000, API key from instance/api_key.txt -> Save and test
+  3. After ANY change in extension/: press the reload button on Satark in chrome://extensions, then refresh the tab
+     (a new permission, like "scripting" for the snip tool, only arrives after a reload)
+  4. Local files (file://) need "Allow access to file URLs" in the extension's Details
+
+E. TELEGRAM BOT
+  1. @BotFather -> /newbot -> copy the token into instance/telegram_token.txt (one line)
+  2. Start the server first, then in a second terminal:  python bots/telegram_bot.py
+  3. In Telegram: /start, then forward a message, link, photo, .apk or .eml
+
+F. AI ASSISTANT (Ollama)
+  ollama list                    shows installed models (qwen3:1.7b should be there)
+  First answer after start-up is slower while the model loads; ask one question before a demo.
+
+G. OFFLINE MODE FOR THE VENUE
+  1. With internet: run every R4C sample once (website or bot) so lookups are cached
+  2. At the venue:  set PS01_NETWORK=cache  then  python app.py
+  3. The assistant works offline (Ollama is local). Voice INPUT needs internet (browser speech service);
+     read-aloud works offline.
+
+H. BUILDING THE SUBMISSION FILES
+  python tools/make_prototype.py --out "C:/Users/KPK/Desktop/Satark_Prototype.html"
+  python tools/screenshots.py          -> manual/screenshots/*.png and Satark_Wireframes.pdf
+  python tools/ext_screenshots.py      -> extension screenshots

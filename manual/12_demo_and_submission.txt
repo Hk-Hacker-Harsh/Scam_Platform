@@ -1,0 +1,38 @@
+12 – DEMO, SUBMISSION AND TIPS
+
+SUBMISSION FILES (action plan due 24 November)
+  Deck        Claude artifact "Satark – PS01 Action Plan" (22 slides, 4 with screenshots). Fill [Team name],
+              [Member 1–4] and [College] on the cover and last slide, then export to PDF / PowerPoint from the deck.
+  Prototype   Desktop\Satark_Prototype.html – one file, works offline, synthetic data, "Wireframe view" button.
+              Rebuild: python tools/make_prototype.py --out "C:/Users/KPK/Desktop/Satark_Prototype.html"
+  Wireframes  Desktop\Satark_Wireframes.pdf (6 main screens). Rebuild: python tools/screenshots.py
+  Old versions are kept on the Desktop as *_old.
+
+5-MINUTE DEMO (one story)
+  1. Forward a scam SMS to the Telegram bot -> High, 12 of 57 checks flagged, reasons, advice, buttons.
+  2. Open the result on the website: detection meter, Hindi advice, ask the assistant "Is it safe to click the link?".
+  3. Snip a scam message on a web page with the extension -> verdict in a new tab.
+  4. Officer dashboard: the case is in the queue; the link graph joins it to the APK and the lottery SMS.
+  5. Officer marks the UPI ID "Confirmed fraud". Forward a new SMS with that UPI ID: the bot now says
+     "Confirmed fraud" – police knowledge flows back to every citizen channel.
+
+BEFORE THE FINAL (checklist)
+  [ ] Run every R4C sample once with internet; note any wrong verdicts and tune weights / keywords (05 file).
+  [ ] Measure precision and recall on the labelled samples; quote them only with the sample size.
+  [ ] Start with an empty database for the demo; load only the R4C samples.
+  [ ] Try PS01_NETWORK=cache with Wi-Fi off; check the whole demo still works.
+  [ ] Ask the assistant one question before presenting (loads the model).
+  [ ] Reload the extension and run the bot on the demo laptop; check the API key and token there.
+  [ ] Practise the demo with a timer; have screenshots ready in case something fails live.
+  [ ] Ask the in-charges: internet at the venue? sample data date? is top 25 per problem statement?
+
+TIPS FOR JUDGES' QUESTIONS
+  * "Is this AI?" – The verdict is rules we wrote, so every result can be explained and challenged. The AI only
+    explains, and every reply is checked; we show the test where small models gave unsafe advice.
+  * "Third-party dependency?" – Every check and verdict is our own code; online lookups and the AI are optional and
+    local or cached, and the tool works offline.
+  * "False positives?" – Strong signals need backing; one lone signal stays Medium; we show the portfolio-site
+    example we fixed. Never "Safe", only "Low risk".
+  * "Privacy?" – click-only extension, snip sends only the box, APKs never run, images not stored, synthetic data.
+  * "Scale?" – Result cache answers repeats instantly and the heat-list still counts them; SQLite can move to
+    PostgreSQL; the API is the same for every channel (WhatsApp next).

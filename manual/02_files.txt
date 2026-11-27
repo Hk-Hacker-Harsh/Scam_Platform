@@ -1,0 +1,80 @@
+02 – EVERY FOLDER AND FILE
+
+PROJECT ROOT (ps01-platform/)
+  app.py                 The server. Run "python app.py". Creates the app, database and first officer login, serves the
+                         built website, the PDF and CSV downloads, security headers. Registers api.py and ui_api.py.
+  ui_api.py              JSON API for the website (/api/ui/*): session, sign-in, analyse, results, reports, re-check,
+                         assistant, all officer pages. Session cookie + CSRF token; rate limits.
+  api.py                 JSON API for the extension and the Telegram bot (/api/v1/*): needs the API key
+                         (instance/api_key.txt). Analyse, case, lookup, report, assistant.
+  manage.py              Admin commands: add a user, create a new check file, clean stored identifiers (see 05).
+  seed_demo.py           Fills the database with synthetic demo cases (optional).
+  requirements.txt       Python packages.
+  README.md              Technical readme (English).
+  .claude/launch.json    Only for Claude's browser preview. Not needed to run Satark.
+
+core/ – THE ENGINE
+  analysis.py            analyze(): one input -> one saved case. Handles each input type, result cache, deep scan.
+  engine.py              Check registry, the context each check receives, scoring and the verdict rule.
+  extract.py             Finds URLs, e-mails, UPI IDs, phone numbers, IFSC, crypto wallets, GSTIN, PAN… in text.
+  data.py                All word lists and registries: scam keyword patterns (KW, KW_HI for Hindi), brands with
+                         official domains / helplines / app packages, UPI handles, risky TLDs, shorteners, free hosts.
+  data/                  rbi_entities.csv (RBI-registered entities), rbi_bank_domains.json, verified_nbfc_domains.json,
+                         catalogue.json (the full check catalogue shown on /catalogue).
+  db.py                  SQLite database: cases, findings, identifiers, labels, reports, users, audit; search,
+                         campaigns, heat-list, graph, result-cache helpers.
+  image_input.py         Screenshots: QR decoding (OpenCV) and OCR (Tesseract, found automatically).
+  netcache.py            Cache for online lookups (domain age, DNS, page fetch) in instance/netcache.db; offline mode.
+  report.py              The PDF report for a case.
+  advice.py              "What to do now" texts in English and Hindi for each risk level.
+  assistant.py           The AI assistant: picks the tool, writes the checked answer, asks Ollama, checks the reply.
+  assistant_kb.py        The assistant's safety guide (English + Hindi answers on reporting, OTP, digital arrest…).
+  assistant_service.py   One entry point for the assistant used by both APIs.
+  checks/                One Python file per check, loaded automatically. Folders:
+                           url/ (23 + common.py)  domain/ (3)  message/ (19 + common.py)  phone/ (4)  payment/ (8)
+                           email/ (9)  web/ (16 + fetcher.py, the safe page downloader)  apk/ (19 + extractor.py,
+                           the APK reader)  intelligence/ (5 + common.py: police labels, linking, registry)
+                         checks/README.md explains the format of a check file.
+
+frontend/ – THE WEBSITE (Vue 3 + Vite)
+  index.html, vite.config.js, package.json   Build setup. "npm run build" -> dist/ (served by app.py);
+                                             "npm run build:proto" -> dist-proto/ (offline prototype).
+  src/main.js, App.vue, router.js            Start-up, page frame, page addresses.
+  src/api.js, transport-http.js              Calls to the server.
+  src/styles.css, theme.js                   Design tokens (colours, fonts) for light and dark, the theme switch.
+  src/speech.js                              Read aloud and voice input for the assistant.
+  src/components/                            Reusable parts: Checker (input form), VerdictHeader + RiskMeter
+                                             (detection meter), DetectionList, CaseDetails, AdviceBlock,
+                                             AssistantPanel, GraphView, CaseTable, HeatTable, LevelTag, FileDrop.
+  src/views/                                 Pages: Home, Result, Catalogue, HowItWorks, Login, NotFound,
+                                             officer/ (Layout, Overview, Cases, CaseView, NewAnalysis, Graph,
+                                             Campaigns, Heatlist, Registry, Audit).
+  src/proto/                                 Prototype only: sample-data transport, fixtures.json (synthetic
+                                             data recorded from the engine), banner with wireframe switch.
+  node_modules/, dist/, dist-proto/          Generated. Do not edit; can be deleted and rebuilt.
+
+extension/ – CHROME EXTENSION (Manifest V3, load unpacked)
+  manifest.json          Name, version, permissions (activeTab, contextMenus, storage, scripting).
+  popup.html / popup.js  Toolbar popup: check page, snip, check message, assistant.
+  snip.js                The + crosshair overlay for selecting part of the page.
+  background.js          Right-click menu, crop and upload of snips, result tab.
+  common.js              Shared: settings, API calls, result rendering with the detection ring, assistant, read aloud.
+  result.html/.js, options.html/.js, style.css, icons/
+
+bots/telegram_bot.py     The Telegram bot (long polling). Needs instance/telegram_token.txt.
+
+static/cytoscape.min.js  Graph library, served by the server so the graph works offline.
+
+tests/                   Automated tests (pytest). fixtures/ has two synthetic test APKs.
+
+tools/                   Helper scripts for the submission:
+  make_prototype.py      Builds the single-file offline prototype with synthetic data.
+  screenshots.py         Screenshots of the prototype + the wireframes PDF (headless Chrome / Edge).
+  ext_screenshots.py     Screenshots of the extension's UI.
+
+manual/                  This manual and the screenshots.
+
+instance/ – PRIVATE, CREATED AT RUN TIME (never share or submit)
+  ps01.db                The database.               netcache.db   Cached online lookups.
+  secret.key             Session key.                api_key.txt   Key for the extension and the bot.
+  initial_police_password.txt   First officer password.   telegram_token.txt   Your bot token.

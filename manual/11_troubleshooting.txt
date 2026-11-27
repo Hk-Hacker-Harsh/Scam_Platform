@@ -1,0 +1,41 @@
+11 – TROUBLESHOOTING (problems we have already met)
+
+WEBSITE
+  "Satark server is running – the website has not been built"
+      cd frontend && npm install && npm run build, then reload.
+  A new feature does not show
+      Restart python app.py (server changes) and press Ctrl+F5 (browser cache). After frontend changes: npm run build.
+  Assistant says "Request failed (404)"
+      The server was started before the assistant existed. Restart python app.py.
+
+EXTENSION
+  "The snip tool needs a permission added in Satark 1.2.0"
+      chrome://extensions -> reload Satark (version 1.2.2 or later), refresh the tab.
+  "Either the '<all_urls>' or 'activeTab' permission is required"
+      Fixed in 1.2.2 (the capture now happens at the click). Reload the extension.
+  "Browser pages are protected…"   chrome://, the Web Store and the PDF viewer cannot be snipped (Chrome rule).
+  "Set the server address and API key"   Open the extension's options; key is in instance/api_key.txt.
+  Server unreachable   Is python app.py running? Same address in the options?
+
+TELEGRAM BOT
+  "Telegram rejected the token"    instance/telegram_token.txt must hold only the token, one line, no spaces.
+  "server is not reachable"        start python app.py first.
+  "rejected the API key"           PS01_API_KEY / instance/api_key.txt must match the server's.
+
+OCR
+  Screenshot text not read          GET /api/v1/health must say "ocr": true. pip install pytesseract; install
+                                    Tesseract; restart the server. Tesseract is found through PS01_TESSERACT, PATH,
+                                    the Windows registry or C:\Program Files\Tesseract-OCR (this laptop: E:\Tesseract).
+  Hindi text not read               the Hindi data file is not installed (re-run the Tesseract installer, tick Hindi).
+
+AI ASSISTANT
+  Always "Checked answer"           Normal when replies fail the safety checks. Check Ollama: ollama list, and
+                                    GET /api/ui/assistant/status.
+  Very slow first answer            The model is loading. Ask one question before a demo.
+  "Too many questions in a minute"  Rate limit (20 AI answers / minute / address). Wait a minute.
+
+DATA
+  Old cases show outdated identifiers or levels
+      python manage.py cleanids (dry run), then --apply after backing up instance/ps01.db.
+  Start with an empty database
+      Stop the server, move instance/ps01.db somewhere safe, start again (a new officer password is written).

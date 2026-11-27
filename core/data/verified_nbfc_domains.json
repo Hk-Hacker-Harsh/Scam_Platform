@@ -1,0 +1,4 @@
+{
+  "description": "Hand-maintained list of REAL lenders' own domains, for the RBI-registry check (checks/compliance_india.py). A page that names an RBI-listed company only counts as RBI-approved when its domain looks like that company (e.g. bajajfinserv.in ~ Bajaj Finance Limited) OR it is listed here. Add a real lender whose app / brand name differs from its legal name (e.g. a KreditBee-style brand) once, here, instead of lowering the matching threshold. Subdomains match automatically. Keys = domain, values = the entity name exactly as on the RBI list (informational).",
+  "domains": {}
+}

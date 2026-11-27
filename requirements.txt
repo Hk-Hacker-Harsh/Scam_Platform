@@ -1,0 +1,12 @@
+Flask>=3.0
+requests
+beautifulsoup4
+lxml
+dnspython
+androguard>=4.1
+reportlab
+pytest
+opencv-python-headless   # QR decoding of screenshots (any opencv-python variant works)
+numpy
+qrcode   # tests only
+pytesseract   # OCR of screenshots; also needs the Tesseract program (see README, "OCR setup")

@@ -1,0 +1,49 @@
+07 – DETECTION AND SCORING
+
+SIGNALS
+  Each check returns nothing (clear) or the evidence it saw (fired). Every check has:
+    tier    H = strong ("hard"), S = weak ("soft"), L = information only (no score)
+    weight  how much it adds to the score (strong full weight, weak half)
+  Score = sum of fired weights, capped at 100.
+
+RISK LEVELS (core/engine.py verdict)
+  Confirmed fraud     an identifier in the input is labelled confirmed fraud by the police. Overrides everything.
+  Verified official   all links are on the official registry (and no strong signal fired), or a police label says so.
+  Not enough data     fewer than 3 checks could run.
+  High                score >= 45 AND one of:
+                        - a DECISIVE strong signal (weight >= 45: OTP / PIN request, call-forwarding code,
+                          digital arrest, police label, trojan-like APK, QR "receive money" trick…)
+                        - two strong signals
+                        - one strong signal plus weak signals worth at least 10 points
+  Medium              score >= 18, or any strong signal that nothing backs up
+  Low                 nothing above. Shown as "Low risk – not a guarantee", never "Safe".
+  Why the backing rule: in testing, one wrong strong signal (a portfolio site's "@portfolio" read as a UPI ID) made a
+  legitimate site High. Requiring a second signal stops single false alarms; decisive signals still act alone.
+
+IDENTIFIERS AND LINKING
+  Found in every input: domains, phone numbers (normalised to +91…), UPI IDs (only with a real UPI handle or UPI
+  wording nearby), e-mails, crypto wallets, IPs, Telegram bot tokens, IFSC, GSTIN, APK hash and package.
+  Cases sharing an identifier are linked (campaigns, link graph). Two guards against false links:
+    - a re-scan of the same site or app is not a "linked case"
+    - an earlier High only spreads to other cases if it came from a real signal or a police label
+  APK identifiers are cleaned: SDK hosts (Google, Firebase…), Java names, version numbers and placeholder numbers
+  are dropped.
+
+DEEP SCAN (optional, needs internet)
+  Follows APK links on pages and in messages, and scans servers and e-mails found inside APKs, each as a child case
+  (max 3 levels, 12 children). A High child raises the parent ("followed content malicious", decisive).
+
+RESULT CACHE (core/analysis.py)
+  Same input (text with spaces normalised, or the same file bytes, link, page HTML, and the same online / deep
+  settings) within 12 hours -> the earlier case is returned and counted as a repeat (Times checked, heat-list Seen).
+  Not reused when: a police label on one of its identifiers changed, the rules changed (ENGINE_VERSION), the
+  officer submitted it, it is a re-scan or a deep-scan child, or "Check again" / fresh=1 is used.
+
+LOOKUP CACHE (core/netcache.py)
+  Domain age (RDAP) 7 days ("no date" 6 h), DNS 6 h, fetched pages 6 h. Errors are not cached.
+  PS01_NETWORK=cache uses only cached answers (offline venue).
+
+SCREENSHOTS
+  QR codes: decoded with OpenCV (always available). UPI QR codes are read (pay / collect, payee, amount).
+  Text: Tesseract OCR when installed (English now; Hindi after adding hin.traineddata). Small images are enlarged,
+  dark ones inverted. The image itself is never stored; the extracted text is the case input.

@@ -1,0 +1,38 @@
+03 – SETTINGS (ENVIRONMENT VARIABLES)
+
+Set them in the same terminal before "python app.py". Windows cmd:  set NAME=value      PowerShell:  $env:NAME="value"
+
+SERVER
+  HOST                 Address to listen on (default 127.0.0.1). 0.0.0.0 lets other devices on the network connect.
+  PORT                 Port (default 5000).
+  PS01_DB              Database file (default instance/ps01.db). Use a copy for experiments.
+  PS01_POLICE_PASSWORD Password for the first officer "police" (only used when the database has no users yet).
+  PS01_NETWORK         1 = online lookups on (default); cache = use only cached lookups, never the internet
+                       (offline venue); 0 = online checks off.
+  PS01_CACHE_TTL_HOURS Result cache time (default 12). 0 turns the result cache off.
+  PS01_NETCACHE        File for cached lookups (default instance/netcache.db).
+  PS01_TESSERACT       Full path to tesseract.exe if it is not found automatically.
+
+API (extension and bot)
+  PS01_API_KEY         API key (default: generated into instance/api_key.txt on first start).
+  PS01_API_RATE        Requests per minute per address on /api/v1 (default 30).
+
+AI ASSISTANT
+  PS01_LLM             0 turns the model off (answers come from the data only). Default on.
+  PS01_LLM_MODEL       Ollama model (default qwen3:1.7b). Tested: tinyllama (replies rarely pass the checks),
+                       qwen3.5:4b (best answers, ~35 s each).
+  PS01_OLLAMA_URL      Ollama address (default http://127.0.0.1:11434).
+  PS01_LLM_TIMEOUT     Seconds to wait for the model (default 45).
+  PS01_LLM_KEEP_ALIVE  How long Ollama keeps the model loaded (default 30m).
+  PS01_LLM_CONCURRENCY Model calls at the same time (default 1).
+  PS01_LLM_POLICE      1 lets the model write officer answers. Keep 0: small models mix up figures.
+
+TELEGRAM BOT (bots/telegram_bot.py)
+  TELEGRAM_BOT_TOKEN   Bot token (or put it in instance/telegram_token.txt).
+  PS01_API_URL         Satark server (default http://127.0.0.1:5000).
+  PS01_PUBLIC_URL      Public https address of the website; adds "open full result" links.
+  PS01_BOT_RATE        Checks per chat per minute (default 6).
+
+EXAMPLE: offline demo at the venue, after running the R4C samples once with internet
+  set PS01_NETWORK=cache
+  python app.py

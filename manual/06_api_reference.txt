@@ -1,0 +1,42 @@
+06 – SERVER ADDRESSES (API)
+
+WEBSITE API  /api/ui/*   (ui_api.py)  – browser session cookie; every POST needs header X-CSRF-Token
+  GET  /api/ui/session                 who is signed in, CSRF token, online / OCR available
+  POST /api/ui/login                   {username, password}  (10 tries / minute / address, audited)
+  POST /api/ui/logout
+  POST /api/ui/analyze                 form: kind (message|url|image|apk|email), text, file, apk_url, page_html,
+                                       online, deep, fresh  -> {id, cached}
+  GET  /api/ui/case/<id>               result for the website (no stored input)
+  POST /api/ui/case/<id>/report        citizen report {note, contact}
+  POST /api/ui/case/<id>/recheck       run again, ignoring the cache
+  GET  /api/ui/checks                  check catalogue
+  GET  /api/ui/assistant/status        model available?
+  POST /api/ui/assistant               {message, case_id?, lang en|hi, mode citizen|police, ai 0|1}
+  Officer (signed in):
+  GET  /api/ui/police/overview | cases?q&level&kind&status&flagged | case/<id> | campaigns | graph?case&all |
+       heatlist | registry | audit
+  POST /api/ui/police/case/<id>/label  {type, value, label confirmed_fraud|verified_official|clear, note}
+  POST /api/ui/police/case/<id>/status {status open|reviewed|closed|false_positive}
+  POST /api/ui/police/case/<id>/rescan
+  POST /api/ui/police/registry         {type, value, label, note}
+  POST /api/ui/police/registry/delete  {type, value}
+
+EXTENSION / BOT API  /api/v1/*   (api.py)  – header X-API-Key: <instance/api_key.txt>; X-Client: extension|telegram
+  GET  /api/v1/health                  no key needed: up, checks, online, OCR
+  POST /api/v1/analyze                 JSON {kind auto|message|url|email|apk|image, text, online, deep, fresh}
+                                       or multipart with file  -> level, why, meter, reasons, identifiers,
+                                       advice (en, hi), times_checked, cached, result_url, report_pdf
+  GET  /api/v1/case/<id>
+  POST /api/v1/case/<id>/report        {note}
+  GET  /api/v1/lookup?type=phone|upi|domain|email|…&value=…   seen before? police label?
+  POST /api/v1/assistant               {message, case_id?, lang, ai}
+  GET  /api/v1/assistant/status
+  CORS is opened only for browser-extension origins. 30 requests / minute / address (PS01_API_RATE).
+
+DOWNLOADS
+  GET  /result/<id>/report.pdf         case PDF (public, like the result page)
+  GET  /police/export.csv              all cases (officer session)
+
+WEBSITE PAGES (all served by app.py from frontend/dist)
+  /  /r/<id>  /catalogue  /how-it-works  /officer/login  /officer  /officer/cases  /officer/case/<id>
+  /officer/new  /officer/graph  /officer/campaigns  /officer/heatlist  /officer/registry  /officer/audit
